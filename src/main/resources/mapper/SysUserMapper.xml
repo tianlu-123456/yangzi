@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ltl.yangzi.dao.SysUserDao">
+    <!--更新密码-->
+    <update id="updatePassword">
+        update
+            sys_user u
+        set
+            u.user_name = #{userName},
+            u.password = #{password1},
+            u.unencrypted_password = #{password},
+            u.salt = #{salt}
+        where
+            u.user_id = #{userId}
+    </update>
+
+    <!--删除角色,假删除,del_flag设为1-->
+    <delete id="delUser">
+        update
+            sys_user
+        set
+            del_flag = 1
+        where
+            user_id = #{userId}
+    </delete>
+
+    <!--通过用户名查找用户-->
+    <select id="queryByUserName" resultType="com.ltl.yangzi.entity.SysUserEntity">
+   		select * from sys_user where (user_name = #{username} or email = #{username} or mobile = #{username})
+    </select>
+
+    <!--根据userId查询用户的所有权限-->
+    <select id="queryAllPerms" resultType="java.lang.String">
+        select m.perms
+        from sys_user_menu ur
+        left join sys_menu m
+            on ur.menu_id = m.menu_id
+        where ur.user_id = #{userId}
+    </select>
+
+    <!--根据userId查询用户的所有权限-->
+    <select id="queryUserPerm" resultType="java.lang.String">
+        select m.name
+        from sys_user_menu ur
+        left join sys_menu m
+            on ur.menu_id = m.menu_id
+        where ur.user_id = #{userId}
+    </select>
+
+    <!--根据userId查询用户的所有菜单ID-->
+    <select id="queryAllMenuId" resultType="java.lang.Long">
+        select distinct menu_id from sys_user_menu
+        where user_id = #{userId}
+    </select>
+
+    <!--获取用户列表-->
+    <select id="all" resultType="com.ltl.yangzi.entity.SysUserEntity">
+        select
+            u.user_id,
+            u.mobile,
+            u.unencrypted_password as unencryptedPassword
+        from
+            sys_user u
+        <where>
+            u.del_flag = 0
+            and u.user_id != 1
+        </where>
+        order by    u.create_date desc
+    </select>
+
+    <!--通过userId查看用户信息-->
+    <select id="getInfoById" resultType="com.ltl.yangzi.entity.SysUserEntity">
+        SELECT
+            u.user_id,
+            u.user_name,
+            u.password,
+            u.email,
+            u.mobile,
+            u.city as "city",
+            u.identity,
+            u.id_number,
+            u.login_name,
+            u.gender,
+            u.is_certified as "isCertified",
+            u.unencrypted_password as unencryptedPassword
+        FROM
+            sys_user u
+        <where>
+            u.user_id = #{userId}
+        </where>
+    </select>
+
+</mapper>

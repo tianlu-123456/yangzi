@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ltl.yangzi.dao.SysMenuDao">
+
+    <!--根据父菜单，查询子菜单-->
+    <select id="queryListParentId" resultType="com.ltl.yangzi.entity.SysMenuEntity">
+        select * from sys_menu where parent_id = #{parentId} order by order_num asc
+    </select>
+
+    <!--获取不包含按钮的菜单列表-->
+    <select id="queryNotButtonList" resultType="com.ltl.yangzi.entity.SysMenuEntity">
+        select * from sys_menu order by order_num asc
+    </select>
+    <!--查询所有 倒叙排序-->
+    <select id="selectLastId" resultType="com.ltl.yangzi.entity.SysMenuEntity">
+        select * from sys_menu where 1=1 order by menu_id desc
+    </select>
+</mapper>

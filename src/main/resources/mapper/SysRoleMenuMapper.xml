@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ltl.yangzi.dao.SysRoleMenuDao">
+
+
+    <!--获取字段信息和别名-->
+    <select id="selectSearchBy" resultType="java.util.Map">
+        select
+            column_name ,
+            column_comment
+        from
+            INFORMATION_SCHEMA.COLUMNS
+        where
+            table_name = "sys_role_menu"
+        and
+            table_schema = 'hypering'
+    </select>
+
+
+</mapper>

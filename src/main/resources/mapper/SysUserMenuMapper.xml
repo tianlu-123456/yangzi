@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ltl.yangzi.dao.SysUserMenuDao">
+    <!--添加菜单目录至导航栏-->
+    <insert id="addMenu">
+        insert into
+            sys_user_menu (user_id, menu_id)
+        values
+            (#{userId}, #{menuId})
+    </insert>
+
+    <!--添加菜单目录至导航栏-->
+    <insert id="addMenus">
+        insert into
+            sys_user_menu (user_id,menu_id)
+        values
+            (#{userId},#{parentId})
+    </insert>
+
+    <!--删除用户所有权限-->
+    <delete id="delAll">
+        delete from
+            sys_user_menu
+        where
+            user_id = #{userId}
+    </delete>
+
+
+    <!--查询角色与菜单对应关系对象 搜索框   获取字段信息和别名-->
+    <select id="selectSearchBy" resultType="java.util.Map">
+        select
+            column_name ,
+            column_comment
+        from INFORMATION_SCHEMA.COLUMNS
+        where table_name ="sys_user_menu"
+        AND table_schema = 'safteylock'
+    </select>
+
+    <!--查询出所有可选的权限-->
+    <select id="permsList" resultType="com.ltl.yangzi.entity.SysMenuEntity">
+        SELECT menu_id,`name`,parent_id FROM sys_menu WHERE `type` = '1' AND menu_id != '35' AND menu_id != '31' AND menu_id != '18' AND menu_id != '30' ORDER BY order_num ASC
+    </select>
+
+    <!--查看用户权限-->
+    <select id="getUserPermissions" resultType="com.ltl.yangzi.entity.SysUserEntity">
+        select distinct
+            ur.menu_id
+        from
+            sys_user_menu ur
+        where
+            ur.user_id = #{userId}
+    </select>
+
+    <!--查询这个菜单的父级菜单-->
+    <select id="getParentId" resultType="java.lang.Long">
+        select
+            parent_id
+        from
+            sys_menu
+        where
+            menu_id = #{menuId}
+    </select>
+
+    <!--获取角色与菜单对应关系 列表-->
+    <select id="getList" resultType="com.ltl.yangzi.entity.SysUserMenu">
+        select
+        <include refid="SysUserMenus"/>
+        from sys_user_menu a
+        <include refid="SysUserMenuJoins" />
+        <where>
+            a.del_flag = 0
+            <if test="id!=null and id!=''">
+               and a.id = #{id}
+            </if>
+            <if test="userId!=null and userId!=''">
+                and a.user_id = #{userId}
+            </if>
+            <if test="menuId!=null and menuId!=''">
+                and a.menuId = #{menuId}
+            </if>
+        </where>
+        order by a.sort asc , a.create_date desc
+    </select>
+
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.ltl.yangzi.entity.SysUserMenu" id="sysUserMenuMap">
+        <result property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="menuId" column="menu_id"/>
+        <result property="name" column="name"/>
+        <result property="parentId" column="parent_id"/>
+    </resultMap>
+
+    <!-- SysUserMenu对象 所有字段 -->
+    <sql id="SysUserMenus">
+                    a.id AS "id",
+                    a.user_id AS "userId",
+                    a.menu_id AS "menuId"
+            </sql>
+
+    <!-- SysUserMenu对象 需要字段 -->
+    <sql id="SysUserMenu">
+
+    </sql>
+
+    <!-- 关联表 -->
+    <sql id="SysUserMenuJoins">
+
+    </sql>
+</mapper>
