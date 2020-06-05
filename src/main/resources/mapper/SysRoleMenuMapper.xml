@@ -4,7 +4,7 @@
 <mapper namespace="com.ltl.yangzi.dao.SysRoleMenuDao">
 
 
-    <!--获取字段信息和别名-->
+    <!--查询对象 搜索框-->
     <select id="selectSearchBy" resultType="java.util.Map">
         select
             column_name ,
@@ -17,5 +17,98 @@
             table_schema = 'hypering'
     </select>
 
+    <!--获取List和page-->
+    <select id="getList" resultType="com.ltl.yangzi.entity.SysRoleMenu">
+        select
+        <include refid="SysRoleMenus"/>
+        from sys_role_menu a
+        <include refid="SysRoleMenuJoins"/>
+        <where>
+            a.del_flag = 0
+            <if test="id!=null and id!=''">
+                and a.id = #{id}
+            </if>
+            <if test="roleId!=null and roleId!=''">
+                and a.role_id = #{roleId}
+            </if>
+            <if test="menuId!=null and menuId!=''">
+                and a.menu_id = #{menuId}
+            </if>
+            <if test="createDate!=null and createDate!=''">
+                and a.create_date = #{createDate}
+            </if>
+            <if test="updateDate!=null and updateDate!=''">
+                and a.update_date = #{updateDate}
+            </if>
+            <if test="updateBy!=null and updateBy!=''">
+                and a.update_by = #{updateBy}
+            </if>
+            <if test="sort!=null and sort!=''">
+                and a.sort = #{sort}
+            </if>
+            <if test="delFlag!=null and delFlag!=''">
+                and a.del_flag = #{delFlag}
+            </if>
+        </where>
+    </select>
 
+    <!--查找 id 在employeeIds范围内的数组-->
+    <!--Array:forech中的collection属性类型是array,
+        collection的值必须是:list,
+        item的值可以随意,Dao接口中参数名字随意 -->
+    <select id="selectArrayList" resultType="com.ltl.yangzi.entity.SysRoleMenu">
+        select
+        <include refid="SysRoleMenus"/>
+        from sys_role_menu a
+        where a.del_flag = 0 and a.id in
+        <foreach collection="array" item="employeeId" index="index"
+             open="(" close=")" separator=",">
+            #{employeeId}
+        </foreach>
+    </select>
+
+    <!--查询id 为 null 的对象-->
+    <select id="selectTemplate" resultType="com.ltl.yangzi.entity.SysRoleMenu">
+        select
+        <include refid="SysRoleMenus"/>
+        from sys_role_menu a
+        <include refid="SysRoleMenuJoins"/>
+        <where>
+            a.del_flag = 0
+            and a.id = null
+        </where>
+        order by a.sort asc,a.create_date asc
+    </select>
+
+
+    <!-- SysRoleMenu对象 所有字段 -->
+    <sql id="SysRoleMenus">
+        a.id AS "id",
+        a.role_id AS "roleId",
+        a.menu_id AS "menuId",
+        a.create_date AS "createDate",
+        a.create_by AS "createBy",
+        a.update_date AS "updateDate",
+        a.update_by AS "updateBy",
+        a.sort AS "sort",
+        a.del_flag AS "delFlag"
+    </sql>
+
+    <!-- 关联表 -->
+    <sql id="SysRoleMenuJoins">
+
+    </sql>
+
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.ltl.yangzi.entity.SysRoleMenu" id="sysRoleMenuMap">
+        <result property="id" column="id"/>
+        <result property="roleId" column="role_id"/>
+        <result property="menuId" column="menu_id"/>
+        <result property="createDate" column="create_date"/>
+        <result property="createBy" column="create_by"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="sort" column="sort"/>
+        <result property="delFlag" column="del_flag"/>
+    </resultMap>
 </mapper>
