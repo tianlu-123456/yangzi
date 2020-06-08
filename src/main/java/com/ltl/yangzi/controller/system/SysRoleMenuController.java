@@ -5,11 +5,13 @@ import com.github.pagehelper.PageInfo;
 import com.ltl.yangzi.common.R;
 import com.ltl.yangzi.common.annotion.SysLog;
 import com.ltl.yangzi.common.utils.excel.ExportExcel;
+import com.ltl.yangzi.common.utils.excel.ImportExcel;
 import com.ltl.yangzi.entity.SysRoleMenu;
 import com.ltl.yangzi.service.SysRoleMenuServiceImpl;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
@@ -171,6 +173,38 @@ public class SysRoleMenuController {
       e.printStackTrace();
       return "file!";
     }
+  }
+
+  /**
+   * 导入 对象
+   */
+  @SysLog("导入")
+  @PostMapping("/import")
+  @RequiresPermissions("sys:sysRoleMenu:import")
+  public R importFile(@RequestBody MultipartFile file){
+    try {
+      int successNum = 0;
+      int failureNum = 0;
+      System.out.println("导入");
+      StringBuilder failureMsg = new StringBuilder();
+      ImportExcel ei = new ImportExcel(file, 1, 0);
+      List<SysRoleMenu> list = ei.getDataList(SysRoleMenu.class);
+      for (SysRoleMenu sysRoleMenu : list){
+        try {
+          boolean add = sysRoleMenuService.add(sysRoleMenu);
+          successNum++;
+        } catch (Exception e) {
+          failureNum++;
+        }
+      }
+      if (failureNum > 0) {
+        return R.error(403, "失败" + failureNum + "条数");
+      }
+      return R.ok("成功" + successNum + "条数");
+    }catch (Exception e){
+      e.printStackTrace();
+    }
+    return null;
   }
 
 

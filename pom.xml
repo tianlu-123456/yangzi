@@ -22,6 +22,13 @@
     </properties>
 
     <dependencies>
+
+        <!--validator-->
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-validator</artifactId>
+        </dependency>
+
         <!--mybatis puls -->
         <dependency>
             <groupId>com.baomidou</groupId>

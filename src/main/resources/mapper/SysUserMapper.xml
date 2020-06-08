@@ -91,4 +91,34 @@
         </where>
     </select>
 
+    <!--通过姓名查询用户id-->
+    <select id="getList" resultType="com.ltl.yangzi.entity.SysUserEntity">
+        select mobile,user_id,is_certified from sys_user
+        <where>
+            del_flag = 0
+            <if test="moblie!=null and mobile!=''">
+                and moblie = #{moblie}
+            </if>
+            <if test="identity!=null and identity!=''">
+                and identity = #{identity}
+            </if>
+        </where>
+    </select>
+
+    <!--查看用户名是否可用-->
+    <select id="getUserName" parameterType="java.lang.String" resultType="java.lang.String">
+        select user_name
+        from
+            sys_user
+        where
+            mobile = #{mobile}
+    </select>
+
+    <!--查看手机号是否被注册-->
+    <select id="getPhone" parameterType="java.lang.String" resultType="java.lang.String">
+        select user_name
+        from sys_user
+        where moblie = #{mobile}
+    </select>
+
 </mapper>

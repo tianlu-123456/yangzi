@@ -33,4 +33,13 @@ public interface SysUserDao extends BaseMapper<SysUserEntity> {
 
   /*更新密码*/
   int updatePassword(@Param("password1") String passwordsalt, @Param("userId") Integer userId, @Param("password") String password, @Param("salt") String salt);
+
+  /*通过姓名查询用户id*/
+  List<SysUserEntity> getList(SysUserEntity sysUserEntity);
+
+  /*查看用户名是否可用*/
+  String getUserName(String userName);
+
+  /*查看手机号是否被注册*/
+  String getPhone(String mobile);
 }
