@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.ltl.yangzi.dao.SysUserDao;
 import com.ltl.yangzi.entity.SysUserEntity;
 import org.apache.commons.lang.RandomStringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.crypto.hash.Sha256Hash;
 import org.apache.shiro.subject.Subject;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -116,5 +118,32 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity>{
     //客户默认角色
     this.save(user);
     return true;
+  }
+
+  /**
+   * 更新角色
+   */
+  @Transactional
+  public void update(SysUserEntity user) {
+    if (StringUtils.isBlank(user.getPassword())) {
+      user.setPassword(null);
+    } else {
+      user.setPassword(new Sha256Hash(user.getPassword(), user.getSalt()).toHex());
+    }
+    this.updateById(user);
+  }
+
+  /**
+   * 删除用户
+   */
+  public void deleteBatch(Integer[] userId) {
+    this.removeByIds(Arrays.asList(userId));
+  }
+
+  /**
+   * 查看所有日志接收人
+   */
+  public List<SysUserEntity> getRecvied() {
+    return sysUserDao.getRecvied();
   }
 }

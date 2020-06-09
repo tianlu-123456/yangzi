@@ -5,8 +5,11 @@ import com.ltl.yangzi.common.annotion.SysLog;
 import com.ltl.yangzi.common.form.PasswordForm;
 import com.ltl.yangzi.common.validator.Assert;
 import com.ltl.yangzi.common.validator.ValidatorUtils;
+import com.ltl.yangzi.common.validator.group.UpdateGroup;
 import com.ltl.yangzi.entity.SysUserEntity;
 import com.ltl.yangzi.service.SysUserServiceImpl;
+import io.swagger.models.auth.In;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.crypto.hash.Sha256Hash;
 import org.apache.shiro.subject.Subject;
@@ -16,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * 系统用户
@@ -66,7 +70,7 @@ public class SysUserController extends AbstractController {
     String newPassword = new Sha256Hash(form.getNewPassword(), getUser().getSalt()).toHex();
     Subject subject = SecurityUtils.getSubject();
     SysUserEntity user = (SysUserEntity) subject.getSession().getAttribute("User");
-    boolean flag = sysUserService.updatePassword(user.getUserId(), password, newPassword)
+    boolean flag = sysUserService.updatePassword(user.getUserId(), password, newPassword);
     if (!flag){
       return R.error("原密码不正确");
     }
@@ -121,5 +125,59 @@ public class SysUserController extends AbstractController {
   @PostMapping("updatebyid")
   public R updatebyid(HttpServletRequest request, @RequestBody SysUserEntity user) {
     ValidatorUtils.validateEntity(user, UpdateGroup.class);
+    sysUserService.update(user);
+    return R.ok();
   }
+
+  /**
+   * 删除用户
+   */
+  @SysLog("删除用户")
+  @PostMapping("/delete")
+  public R delete(HttpServletRequest request, @RequestBody Integer[] userIds) {
+    if (ArrayUtils.contains(userIds,1L)) {
+      return R.error("系统管理员不能删除");
+    }
+    //得到存在session中 user值
+    Subject subject = SecurityUtils.getSubject();
+    SysUserEntity user = (SysUserEntity) subject.getSession().getAttribute("User");
+
+    if(ArrayUtils.contains(userIds, user.getUserId())) {
+      return R.error("当前用户不能删除");
+    }
+    sysUserService.deleteBatch(userIds);
+    return R.ok();
+  }
+
+  /**
+   * 查看用户的信息
+   */
+  @RequestMapping("/getUserInfo")
+  public R getUserInfo(Integer id) {
+    SysUserEntity sysUserEntity = sysUserService.getInfoById(id);
+    sysUserEntity.setPhone(sysUserEntity.getMobile());
+    sysUserEntity.setMobile(sysUserEntity.getMobile().replaceAll("(\\d{3})\\d{4}(\\d{4})", "$1****$2"));
+    return R.ok().put("data", sysUserEntity);
+  }
+
+  /**
+   * 查看所有日志接收人
+   */
+  @RequestMapping("/getRecvied")
+  public R getRecvied() {
+    List<SysUserEntity> recvied = sysUserService.getRecvied();
+    return R.ok().put("data", recvied);
+  }
+
+  /**
+   * 实名认证
+   */
+  @RequestMapping("/autonym")
+  public R autonym(@RequestBody SysUserEntity sysUserEntity) {
+    sysUserEntity.setIsCertified("2");
+    sysUserService.updateById(sysUserEntity);
+    return R.ok();
+  }
+
+
 }

@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ltl.yangzi.dao.SysRoleDao">
+
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.ltl.yangzi.entity.SysRole" id="sysRoleMap">
+        <result property="roleId" column="role_id"/>
+        <result property="roleName" column="role_name"/>
+        <result property="remark" column="remark"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="sort" column="sort"/>
+    </resultMap>
+
+    <!-- SysRole对象 所有字段 -->
+    <sql id="SysRoles">
+        a.role_id AS "roleId",
+        a.role_name AS "roleName",
+        a.remark AS "remark",
+        a.create_by AS "createBy",
+        a.create_date AS "createDate",
+        a.update_by AS "updateBy",
+        a.update_date AS "updateDate",
+        a.del_flag AS "delFlag",
+        a.sort AS "sort"
+    </sql>
+
+    <!-- SysRole对象 需要字段 -->
+    <sql id="SysRole">
+
+    </sql>
+
+    <!-- 关联表 -->
+    <sql id="SysRoleJoins">
+
+    </sql>
+
+    <!--获取字段信息和别名-->
+    <select id="selectSearchBy" resultType="java.util.Map">
+        SELECT
+          COLUMN_NAME,
+          column_comment
+        FROM
+            INFORMATION_SCHEMA.COLUMNS
+        where
+            table_name ="sys_role"
+            AND table_schema = 'hypering'
+    </select>
+
+    <!--获取角色列表-->
+    <select id="getList" resultType="com.ltl.yangzi.entity.SysRole">
+        select
+        <include refid="SysRoles"/>
+        from sys_role a
+        <where>
+            a.del_flag=0
+            <if test="roleId!=null and roleId!=''">
+                and a.role_id = #{roleId}
+            </if>
+            <if test="roleName!=null and roleName!=''">
+                and a.role_name = #{roleName}
+            </if>
+            <if test="remark!=null and remark!=''">
+                and a.remark = #{remark}
+            </if>
+            <if test="createBy!=null and createBy!=''">
+                and a.create_by = #{createBy}
+            </if>
+            <if test="createDate!=null and createDate!=''">
+                and a.create_date = #{createDate}
+            </if>
+            <if test="updateBy!=null and updateBy!=''">
+                and a.update_by = #{updateBy}
+            </if>
+            <if test="updateDate!=null and updateDate!=''">
+                and a.update_date = #{updateDate}
+            </if>
+            <if test="delFlag!=null and delFlag!=''">
+                and a.del_flag = #{delFlag}
+            </if>
+            <if test="sort!=null and sort!=''">
+                and a.sort = #{sort}
+            </if>
+        </where>
+        order by a.sorrt asc, a.create_date desc
+    </select>
+
+    <!--查找 id 在employeeIds范围内的数组-->
+    <select id="selectArrayList" resultType="com.ltl.yangzi.entity.SysRole">
+        select
+        <include refid="SysRoles"/>
+        from sys_role a
+        where a.del_flag = 0 and a.id in
+        <foreach collection="array" item="employeeId" index="index"
+                 open="(" close=")" separator=",">
+            #{employeeId}
+        </foreach>
+    </select>
+
+    <!--查询id为null ，作为模板-->
+    <select id="selectTemplate" resultType="com.ltl.yangzi.entity.SysRole">
+        SELECT
+        <include refid="SysRoles"/>
+        FROM sys_role a
+        <include refid="SysRoleJoins"/>
+        <where>
+            a.del_flag = 0
+            and a.id=null
+        </where>
+        order by a.sort ASC,a.create_date ASC
+    </select>
+
+
+</mapper>

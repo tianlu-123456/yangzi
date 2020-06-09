@@ -57,35 +57,35 @@
     <!--获取用户列表-->
     <select id="all" resultType="com.ltl.yangzi.entity.SysUserEntity">
         select
-            u.user_id,
-            u.mobile,
-            u.unencrypted_password as unencryptedPassword
+        u.user_id,
+        u.mobile,
+        u.unencrypted_password as unencryptedPassword
         from
-            sys_user u
+        sys_user u
         <where>
             u.del_flag = 0
             and u.user_id != 1
         </where>
-        order by    u.create_date desc
+        order by u.create_date desc
     </select>
 
     <!--通过userId查看用户信息-->
     <select id="getInfoById" resultType="com.ltl.yangzi.entity.SysUserEntity">
         SELECT
-            u.user_id,
-            u.user_name,
-            u.password,
-            u.email,
-            u.mobile,
-            u.city as "city",
-            u.identity,
-            u.id_number,
-            u.login_name,
-            u.gender,
-            u.is_certified as "isCertified",
-            u.unencrypted_password as unencryptedPassword
+        u.user_id,
+        u.user_name,
+        u.password,
+        u.email,
+        u.mobile,
+        u.city as "city",
+        u.identity,
+        u.id_number,
+        u.login_name,
+        u.gender,
+        u.is_certified as "isCertified",
+        u.unencrypted_password as unencryptedPassword
         FROM
-            sys_user u
+        sys_user u
         <where>
             u.user_id = #{userId}
         </where>
@@ -119,6 +119,16 @@
         select user_name
         from sys_user
         where moblie = #{mobile}
+    </select>
+
+    <!--查看所有日志接收人-->
+    <select id="getRecvied" resultType="com.ltl.yangzi.entity.SysUserEntity">
+        select
+            user_id, login_name
+        from
+            sys_user
+        where
+            `identity` = 1 and del_flag = 0
     </select>
 
 </mapper>

@@ -42,4 +42,7 @@ public interface SysUserDao extends BaseMapper<SysUserEntity> {
 
   /*查看手机号是否被注册*/
   String getPhone(String mobile);
+
+  /*查看所有日志接收人*/
+  List<SysUserEntity> getRecvied();
 }
